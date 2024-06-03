@@ -1,0 +1,20 @@
+# depslib dependency file v1.0
+1715625073 source:c:\users\user\desktop\week13-3_file_fopen_fclose_fprintf_fscanf\glm.cpp
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<assert.h>
+	"glm.h"
+
+1715625073 c:\users\user\desktop\week13-3_file_fopen_fclose_fprintf_fscanf\glm.h
+	<GL/glut.h>
+
+1715625073 source:c:\users\user\desktop\week13-3_file_fopen_fclose_fprintf_fscanf\main.cpp
+	<opencv/highgui.h>
+	<opencv/cv.h>
+	<GL/glut.h>
+	<GL/glut.h>
+	"glm.h"
+	<stdio.h>
+
