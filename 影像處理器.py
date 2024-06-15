@@ -31,7 +31,7 @@ class ImageProcessor(QMainWindow):
         self.comboBox.addItem("HSV")
         self.comboBox.addItem("Gaussian Blur")
         self.comboBox.addItem("Binary Threshold")
-        self.comboBox.addItem("Random Rotation")
+        self.comboBox.addItem("Rotation")
         self.comboBox.currentIndexChanged.connect(self.apply_effect)
         
         # 添加滑動條
@@ -44,18 +44,18 @@ class ImageProcessor(QMainWindow):
         # 添加HSV滑動條
         self.slider_h = QSlider(Qt.Horizontal, self)
         self.slider_h.setMinimum(0)
-        self.slider_h.setMaximum(180)
+        self.slider_h.setMaximum(179)
         self.slider_h.setValue(0)
         self.slider_h.valueChanged.connect(self.apply_effect)
         
         self.slider_s = QSlider(Qt.Horizontal, self)
-        self.slider_s.setMinimum(0)
+        self.slider_s.setMinimum(-255)
         self.slider_s.setMaximum(255)
         self.slider_s.setValue(0)
         self.slider_s.valueChanged.connect(self.apply_effect)
         
         self.slider_v = QSlider(Qt.Horizontal, self)
-        self.slider_v.setMinimum(0)
+        self.slider_v.setMinimum(-255)
         self.slider_v.setMaximum(255)
         self.slider_v.setValue(0)
         self.slider_v.valueChanged.connect(self.apply_effect)
@@ -148,9 +148,19 @@ class ImageProcessor(QMainWindow):
             self.slider_label.setText(f'Alpha: {alpha:.2f}')
         elif effect == "HSV":
             h, s, v = cv2.split(cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV))
-            h = np.clip(h + self.slider_h.value(), 0, 179)
-            s = np.clip(s + self.slider_s.value(), 0, 255)
+
+            # 调整色相
+            h = (h + self.slider_h.value()) % 180  # 色相值在0-179之间
+            h = np.uint8(h)
+            
+            # 调整饱和度
+            s = np.clip(s + self.slider_s.value(),0,255)
+            s = np.uint8(s)
+            
+            # 调整明度
             v = np.clip(v + self.slider_v.value(), 0, 255)
+            v = np.uint8(v)
+
             self.processed_image = cv2.cvtColor(cv2.merge((h, s, v)), cv2.COLOR_HSV2BGR)
             self.slider_label_h.setText(f'Hue: {self.slider_h.value()}')
             self.slider_label_s.setText(f'Saturation: {self.slider_s.value()}')
@@ -163,7 +173,7 @@ class ImageProcessor(QMainWindow):
             gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
             _, self.processed_image = cv2.threshold(gray, value, 255, cv2.THRESH_BINARY)
             self.slider_label.setText(f'Threshold: {value}')
-        elif effect == "Random Rotation":
+        elif effect == "Rotation":
             angle = value * 3.6  # Value in degrees (0-360)
             h, w = self.image.shape[:2]
             M = cv2.getRotationMatrix2D((w / 2, h / 2), angle, 1)
@@ -190,7 +200,7 @@ class ImageProcessor(QMainWindow):
     def update_slider_visibility(self):
         # 更新滑動條的可見性
         effect = self.comboBox.currentText()
-        if effect in ["Canny Edge Detection", "Sharpen", "Gaussian Blur", "Binary Threshold", "Random Rotation"]:
+        if effect in ["Canny Edge Detection", "Sharpen", "Gaussian Blur", "Binary Threshold", "Rotation"]:
             self.slider.show()
             self.slider_h.hide()
             self.slider_s.hide()
