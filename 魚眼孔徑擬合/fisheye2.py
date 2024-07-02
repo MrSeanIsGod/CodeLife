@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # 讀取影像
-image_path = "fisheye4.jpg"
+image_path = "fisheye.jpg"
 image = cv2.imread(image_path, cv2.IMREAD_COLOR)
 
 # 轉換為灰階影像
